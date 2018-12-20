@@ -65,7 +65,7 @@
 					float4 vertex   : SV_POSITION;
 					float2 texcoord : TEXCOORD0;
 					float3 position : TEXCOORD1;
-					float2 coord    : TEXCOORD2;
+					float3 coord    : TEXCOORD2;
 				};
 
 				struct f2g
@@ -80,7 +80,7 @@
 					o.vertex   = float4(texcoord.xy * 2.0f - 1.0f, 0.5f, 1.0f);
 					o.texcoord = texcoord;
 					o.position = mul(_Matrix, worldPos).xyz;
-					o.coord    = o.position * 0.5f + 0.5f;
+					o.coord.xy    = o.position * 0.5f + 0.5f;
 #if UNITY_UV_STARTS_AT_TOP
 					o.vertex.y = -o.vertex.y;
 #endif
@@ -88,15 +88,17 @@
 					float  normalDot   = dot(worldNormal, _Direction);
 
 					o.position.z += (normalDot + 1.0f) * _NormalScale;
-					//if (normalDot >= 0)
+					o.coord.z = 1.0f;
+					if (normalDot > 0)
 					{
-						//o.position.z = 2.0f;
+						o.position.z = 2.0f;
+						o.coord.z = 0.0f;
 					}
 				}
 
 				void Frag(v2f i, out f2g o)
 				{
-					float4 color = tex2D(_Texture, i.coord) * _Color;
+					float4 color = tex2D(_Texture, i.coord.xy) * _Color;
 					float3 box   = saturate(abs(i.position));
 
 					box.xy = pow(box.xy, 1000.0f); // Make edges with high hardness
@@ -104,7 +106,8 @@
 
 					float strength = 1.0f - max(box.x, max(box.y, box.z));
 
-					o.color = Blend(color, strength, _Buffer, i.texcoord);
+					o.color = Blend(color, strength, _Buffer, i.texcoord) * i.coord.z;
+					o.color.a = 1.0f;
 				}
 			ENDCG
 		} // Pass

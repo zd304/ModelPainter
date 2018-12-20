@@ -116,6 +116,15 @@ public class Paintable : MonoBehaviour
 
         SetChannel(cachedMaterial, ChannelType.UV0);
 		cachedMaterial.SetMatrix("_Matrix", cachedMatrix.inverse);
+		if (cachedBrush.mBuffer != null)
+		{
+			cachedMaterial.EnableKeyword("P3D_B");
+			cachedMaterial.SetTexture("_Buffer", cachedBrush.mBuffer);
+		}
+		else
+		{
+			cachedMaterial.DisableKeyword("P3D_B");
+		}
         //cachedMaterial.SetTexture("_Buffer", );
         cachedMaterial.SetVector("_Direction", cachedDirection);
         cachedMaterial.SetColor("_Color", cachedBrush.mColor);

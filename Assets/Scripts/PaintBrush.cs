@@ -10,6 +10,7 @@ public class PaintBrush : MonoBehaviour
 	public float mHandness = 1.0f;
 	public float mNormalScale = 1.0f;
     public Texture mDecal = null;
+	public Texture mBuffer = null;
 	private float mLastTime;
 
     public Vector3 Point
@@ -31,7 +32,7 @@ public class PaintBrush : MonoBehaviour
 	
 	void Update()
     {
-		if (Time.realtimeSinceStartup - mLastTime <= 0.2f)
+		if (Time.realtimeSinceStartup - mLastTime <= 0.05f)
 			return;
 		mLastTime = Time.realtimeSinceStartup;
 
